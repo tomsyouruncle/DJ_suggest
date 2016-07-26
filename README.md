@@ -1,7 +1,7 @@
 DJ_suggest
 ==============================
 
-Spotify app to make music suggestions for DJs
+Spotify app using ML to make music suggestions for DJs
 
 
 Project Organization
