@@ -25,3 +25,12 @@ def features_list(track_ids_array):
     features = sp.audio_features(track_ids_array)
     return pd.read_json(json.dumps(features, indent=4))
 
+def get_recommends_from_seed(input_tracks):
+    client_credentials_manager = SpotifyClientCredentials()
+    sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+    sp.trace = False
+    results_array = []
+    results = sp.recommendations(seed_tracks=input_tracks, limit=10, country=None)
+    for track in results['tracks']:
+        results_array.append(track['id'])
+    return results_array
