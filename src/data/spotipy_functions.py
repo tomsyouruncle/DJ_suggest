@@ -34,3 +34,10 @@ def get_recommends_from_seed(input_tracks,quantity_to_return):
     for track in results['tracks']:
         results_array.append(track['id'])
     return results_array
+
+def get_new_recs_and_feats(input_tracks,quantity_to_return):
+    return features_list(get_recommends_from_seed(input_tracks,quantity_to_return))
+
+def band_BPMs(track_features_frame, min_BPM, max_BPM):
+    track_features_frame.tempo = list(map(lambda x: x/2 if (x>max_BPM) else x*2 if (x<min_BPM) else x, track_features_frame.tempo))
+    return track_features_frame
