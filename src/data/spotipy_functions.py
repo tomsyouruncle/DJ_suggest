@@ -29,15 +29,29 @@ def get_recommends_from_seed(input_tracks,quantity_to_return):
     client_credentials_manager = SpotifyClientCredentials()
     sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
     sp.trace = False
-    results_array = []
+    results_dict = {'id':[],'track_name':[],'artist_name':[]}
     results = sp.recommendations(seed_tracks=input_tracks, limit=quantity_to_return, country=None)
     for track in results['tracks']:
-        results_array.append(track['id'])
-    return results_array
+        # results_array.append(track['id'])
+        results_dict['id'].append(track['id'])
+        results_dict['track_name'].append(track['name'])
+        results_dict['artist_name'].append(track['artists'][0]['name'])
+    return results_dict
 
 def get_new_recs_and_feats(input_tracks,quantity_to_return):
-    return features_list(get_recommends_from_seed(input_tracks,quantity_to_return))
+    new_tracks_dict = get_recommends_from_seed(input_tracks,quantity_to_return)
+    new_trackset_df = features_list(new_tracks_dict['id'])
+    new_trackset_df['track_name'] = new_tracks_dict['track_name']
+    new_trackset_df['artist_name'] = new_tracks_dict['artist_name']
+    return new_trackset_df
+
 
 def band_BPMs(track_features_frame, min_BPM, max_BPM):
     track_features_frame.tempo = list(map(lambda x: x/2 if (x>max_BPM) else x*2 if (x<min_BPM) else x, track_features_frame.tempo))
     return track_features_frame
+
+def split_head_tail(df, head_size):
+    head_df = df.head(head_size)
+    tail_df = df.tail(df.shape[0] - head_size)
+    return [head_df, tail_df]
+
