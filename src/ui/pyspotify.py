@@ -52,7 +52,7 @@ session.on(
 session.on(spotify.SessionEvent.END_OF_TRACK, on_end_of_track)
 
 # Assuming a previous login with remember_me=True and a proper logout
-session.login('tom2.uk','str3amingsucks')
+session.login('username','password')
 #session.relogin()
 
 logged_in.wait()
