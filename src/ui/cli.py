@@ -7,8 +7,6 @@ import pandas as pd
 import numpy as np
 import pickle
 
-
-
 PROJ_ROOT = os.path.join(os.getcwd(), os.pardir, os.pardir)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
@@ -43,25 +41,12 @@ def define_seed():
       init_seed.append(inp)
   return init_seed
 
-def generate_recs(init_seed):
-  print("Generating recommendations...")
-  suggest_set = get_new_recs_and_feats(init_seed,30)
-  suggest_set = band_BPMs(suggest_set,80,170)
-  return(suggest_set)
-
-def define_training_set(init_seed):
-  training_set = get_tracks_details(init_seed).merge(get_features_for_tracks(init_seed), on='id')
-  training_set['status'] = np.ones(len(init_seed))
-  training_set['weight'] = np.ones(len(init_seed))
-  training_set['P_accept'] = np.zeros(len(init_seed))
-  return training_set
-
+#MAIN
 init_seed = define_seed()
-suggest_set = generate_recs(init_seed)
+print("Generating recommendations...")
 training_set = define_training_set(init_seed)
-
+suggest_set = band_BPMs(get_new_recs_and_feats(init_seed,30),80,170)
 gui_cols = ['artist_name','track_name','tempo','uri','status','P_accept']
-
 acc_rej = ''
 while acc_rej != 'q':
   print('TRAINING SET')
