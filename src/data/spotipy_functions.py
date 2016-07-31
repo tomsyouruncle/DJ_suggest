@@ -33,19 +33,19 @@ def get_recommends_from_seed(input_tracks,quantity_to_return):
     sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
     sp.trace = False
     results_df = pd.DataFrame(columns=('id','track_name','artist_name'))
-    results = sp.recommendations(seed_tracks=input_tracks, limit=quantity_to_return, country=None)
+    results = sp.recommendations(seed_tracks=input_tracks, limit=quantity_to_return, country='GB')
     for i, track in enumerate(results['tracks']):
         results_df.loc[i] = [track['id'],track['name'],track['artists'][0]['name']]
     return results_df
 
 # Returns dataframe of IDs, track names, artist names and features for input seed tracks (max 5)
 def get_new_recs_and_feats(input_tracks,quantity_to_return):
-    new_tracks = get_recommends_from_seed(input_tracks,quantity_to_return)
-    new_trackset_df = get_features_for_tracks(new_tracks['id'])
-    new_trackset_df['track_name'] = new_tracks['track_name']
-    new_trackset_df['artist_name'] = new_tracks['artist_name']
-    new_trackset_df['state'] = np.zeros(quantity_to_return)
-    return new_trackset_df
+    new_tracks_df = get_recommends_from_seed(input_tracks,quantity_to_return)
+    new_tracks_df = new_tracks_df.merge(get_features_for_tracks(new_tracks_df['id']), on='id')
+    new_tracks_df['status'] = np.zeros(quantity_to_return)
+    new_tracks_df['weight'] = np.ones(quantity_to_return)
+    new_tracks_df['P_accept'] = np.ones(quantity_to_return)
+    return new_tracks_df
 
 # Returns dataframe of IDs, track names and artists names from input list of IDs
 def get_tracks_details(input_tracks):
