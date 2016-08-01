@@ -12,18 +12,18 @@ app.new_playlist = True
 
 
 #PROJ_ROOT = os.path.join(os.getcwd(), os.pardir, os.pardir)
-PROJ_ROOT = os.getcwd()
+app.PROJ_ROOT = os.getcwd()
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
 pd.options.display.float_format = '{:,.3f}'.format
 
 # load environment variables from .env file using dotenv.
 from dotenv import load_dotenv
-dotenv_path = os.path.join(PROJ_ROOT, '.env')
+dotenv_path = os.path.join(app.PROJ_ROOT, '.env')
 load_dotenv(dotenv_path)
 
 # add the 'src' directory as one where we can import modules
-src_dir = os.path.join(PROJ_ROOT, 'src')
+src_dir = os.path.join(app.PROJ_ROOT, 'src')
 sys.path.append(src_dir)
 
 from data.spotipy_functions import *
@@ -75,4 +75,4 @@ def reject_track(suggest_id):
   return redirect('/display')
 
 if __name__ == "__main__":
-  app.run(debug=True)
+  app.run(host='0.0.0.0')
