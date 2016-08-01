@@ -18,9 +18,9 @@ pd.set_option('display.width', 1000)
 pd.options.display.float_format = '{:,.3f}'.format
 
 # load environment variables from .env file using dotenv.
-from dotenv import load_dotenv
-dotenv_path = os.path.join(app.PROJ_ROOT, '.env')
-load_dotenv(dotenv_path)
+#from dotenv import load_dotenv
+#dotenv_path = os.path.join(app.PROJ_ROOT, '.env')
+#load_dotenv(dotenv_path)
 
 # add the 'src' directory as one where we can import modules
 src_dir = os.path.join(app.PROJ_ROOT, 'src')
@@ -75,4 +75,4 @@ def reject_track(suggest_id):
   return redirect('/display')
 
 if __name__ == "__main__":
-  app.run(host='0.0.0.0')
+  app.run()
