@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Build your playlist</h3>
+<h4>Current playlist</h4>
+{{training|safe}}
+<h4>Suggestions</h4>
+{{suggest|safe}}
+{% endblock %}
+

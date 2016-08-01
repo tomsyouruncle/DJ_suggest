@@ -24,11 +24,6 @@ sys.path.append(src_dir)
 from data.spotipy_functions import *
 from models.train_model import *
 
-def process_track(suggest_set, training_set, id, choice):
-  suggest_set.loc[id,'status'] = choice
-  training_set.loc[len(training_set)] = suggest_set.loc[id]
-  suggest_set = suggest_set.drop([id])
-  return [suggest_set, training_set]
 
 def define_seed():
   print("Enter between 1 and 5 seed track spotify IDs")
@@ -64,9 +59,9 @@ while acc_rej != 'q':
   print('To get new recommendations from a new seed, type: g')
   acc_rej = input('To quit, type: q   > ')
   if acc_rej[0] == 'a':
-    [suggest_set, training_set] = process_track(suggest_set, training_set, int(acc_rej[1:]), 1)
+    suggest_set, training_set = process_track(suggest_set, training_set, int(acc_rej[1:]), 1)
   elif acc_rej[0] == 'r':
-    [suggest_set, training_set] = process_track(suggest_set, training_set, int(acc_rej[1:]), -1)
+    suggest_set, training_set = process_track(suggest_set, training_set, int(acc_rej[1:]), -1)
   elif acc_rej == 'q':
     break
   elif acc_rej == 's':
