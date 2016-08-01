@@ -1,1 +1,1 @@
-web: gunicorn ./src/web/wsgi.py 
+web: gunicorn ./src/web/run_app.py 
