@@ -11,7 +11,8 @@ app.seed_uris = []
 app.new_playlist = True
 
 
-PROJ_ROOT = os.path.join(os.getcwd(), os.pardir, os.pardir)
+#PROJ_ROOT = os.path.join(os.getcwd(), os.pardir, os.pardir)
+PROJ_ROOT = os.getcwd()
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
 pd.options.display.float_format = '{:,.3f}'.format
