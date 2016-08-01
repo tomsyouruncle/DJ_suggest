@@ -4,10 +4,11 @@ import numpy as np
 import sys
 import os
 app = Flask(__name__)
-app.gui_cols = ['artist_name','track_name','tempo','uri','status']
+app.gui_cols = ['artist_name','track_name','tempo','uri']
 app.training_set = pd.DataFrame()
 app.suggest_set = pd.DataFrame()
 app.seed_uris = []
+app.new_playlist = True
 
 
 PROJ_ROOT = os.path.join(os.getcwd(), os.pardir, os.pardir)
@@ -38,13 +39,18 @@ def home_page_post():
     for i in range(5):
       if request.form['uri{}'.format(i)] != '':
         app.seed_uris.append(request.form['uri{}'.format(i)][-22:])
-    app.training_set = define_training_set(app.seed_uris)
-    app.suggest_set = band_BPMs(get_new_recs_and_feats(app.seed_uris,5),80,170)
+    app.suggest_set = band_BPMs(get_new_recs_and_feats(app.seed_uris,30),80,170)
+    if app.new_playlist:
+      app.training_set = define_training_set(app.seed_uris)
+      app.new_playlist = False
+    else:
+      if app.training_set.status.min() < 0:
+        app.suggest_set = train_NB_model(app.suggest_set, app.training_set)    
   display_suggest_set = app.suggest_set[app.gui_cols + ['P_accept']]
   display_suggest_set.loc[:,'Accept'] = list(map(lambda x: '<a href="/accept/{0}">Accept</a>'.format(x), np.array(display_suggest_set.index)))
   display_suggest_set.loc[:,'Reject'] = list(map(lambda x: '<a href="/reject/{0}">Reject</a>'.format(x), np.array(display_suggest_set.index)))  
   display_suggest_set = display_suggest_set.sort_values(by=['P_accept'], ascending=False)
-  display_training_set = app.training_set[app.gui_cols]
+  display_training_set = app.training_set[app.training_set.status == 1][app.gui_cols]
   return render_template("output.html", seeds=app.seed_uris, training=display_training_set.to_html(escape=False), suggest=display_suggest_set.to_html(escape=False))
 
 @app.route("/seed")
@@ -55,19 +61,17 @@ def seed_input():
 def accept_track(suggest_id):
   suggest_id_int = int(suggest_id)
   app.suggest_set, app.training_set = process_track(app.suggest_set, app.training_set, suggest_id_int, 1)
+  # only train the model when it has positive and negative examples
+  if app.training_set.status.min() < 0:
+    app.suggest_set = train_NB_model(app.suggest_set, app.training_set)
   return redirect('/display')
 
 @app.route("/reject/<suggest_id>")
 def reject_track(suggest_id):
   suggest_id_int = int(suggest_id)
   app.suggest_set, app.training_set = process_track(app.suggest_set, app.training_set, suggest_id_int, -1)
+  app.suggest_set = train_NB_model(app.suggest_set, app.training_set)
   return redirect('/display')
-
-@app.route('/analysis/<filename>')
-def analysis(filename):
-  df = pd.DataFrame([0,1,2,3,4], columns=['a'])
-  df['a'] = df['a'].apply(lambda x: '<a href="http://example.com/{0}">link</a>'.format(x))
-  return render_template("analysis.html", name=filename, data=df.to_html(escape=False))
 
 if __name__ == "__main__":
   app.run(debug=True)
