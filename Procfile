@@ -1,1 +1,1 @@
-web: python ./src/web/run_app.py 
+web: gunicorn ./src/web/wsgi.py 
