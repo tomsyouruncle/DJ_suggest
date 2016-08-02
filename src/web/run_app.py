@@ -15,12 +15,13 @@ app.new_playlist = True
 app.PROJ_ROOT = os.getcwd()
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
+pd.set_option('max_colwidth', 500)
 pd.options.display.float_format = '{:,.3f}'.format
 
 # load environment variables from .env file using dotenv.
-#from dotenv import load_dotenv
-#dotenv_path = os.path.join(app.PROJ_ROOT, '.env')
-#load_dotenv(dotenv_path)
+from dotenv import load_dotenv
+dotenv_path = os.path.join(app.PROJ_ROOT, '.env')
+load_dotenv(dotenv_path)
 
 # add the 'src' directory as one where we can import modules
 src_dir = os.path.join(app.PROJ_ROOT, 'src')
@@ -49,7 +50,8 @@ def home_page_post():
         app.suggest_set = train_NB_model(app.suggest_set, app.training_set)    
   display_suggest_set = app.suggest_set[app.gui_cols + ['P_accept']]
   display_suggest_set.loc[:,'Accept'] = list(map(lambda x: '<a href="/accept/{0}">Accept</a>'.format(x), np.array(display_suggest_set.index)))
-  display_suggest_set.loc[:,'Reject'] = list(map(lambda x: '<a href="/reject/{0}">Reject</a>'.format(x), np.array(display_suggest_set.index)))  
+  display_suggest_set.loc[:,'Reject'] = list(map(lambda x: '<a href="/reject/{0}">Reject</a>'.format(x), np.array(display_suggest_set.index)))
+  display_suggest_set.loc[:,'Play'] = list(map(lambda x: '<iframe src="https://embed.spotify.com/?uri={0}" width="300" height="80" frameborder="0" allowtransparency="true"></iframe>'.format(x), display_suggest_set.uri))  
   display_suggest_set = display_suggest_set.sort_values(by=['P_accept'], ascending=False)
   display_training_set = app.training_set[app.training_set.status == 1][app.gui_cols]
   return render_template("output.html", seeds=app.seed_uris, training=display_training_set.to_html(escape=False), suggest=display_suggest_set.to_html(escape=False))
@@ -76,3 +78,4 @@ def reject_track(suggest_id):
 
 if __name__ == "__main__":
   app.run()
+
