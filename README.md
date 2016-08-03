@@ -1,7 +1,11 @@
 DJ_suggest
 ==============================
 
-Spotify app using ML to make music suggestions for DJs
+Spotify app using ML to make music suggestions for DJs.
+Web app built on flask inside src/web.
+CLI for simple testing in src/ui.
+
+NOT PRODUCTION READY.
 
 
 Project Organization
@@ -46,7 +50,11 @@ Project Organization
     │   │   ├── predict_model.py
     │   │   └── train_model.py
     │   │
-    │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
-    │       └── visualize.py
+    │   ├── ui             <- Scripts to run the Command Line Interface
+    │   │
+    │   ├── visualization  <- Scripts to create exploratory and results oriented visualizations
+    │   │    └── visualize.py
+    │   │    
+    │   └── web            <- Flask scripts for web app
     │
     └── tox.ini            <- tox file with settings for running tox; see tox.testrun.org

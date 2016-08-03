@@ -2,9 +2,12 @@
 {% block content %}
 <h3>Build your playlist</h3>
 <h4>Current playlist</h4>
-{{training|safe}}
+{{accept|safe}}
+<h4>Rejected tracks</h4>
+{{reject|safe}}
 <h4>Suggestions</h4>
 {{suggest|safe}}
 <h4>Running out of tracks? <a href='/seed'>Generate more from a fresh seed!</a></h4>
+<h5>Dev mode: <a href='/save'>pickle all tables.</a></h5>
 {% endblock %}
 

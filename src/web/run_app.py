@@ -41,7 +41,7 @@ def home_page_post():
     for i in range(5):
       if request.form['uri{}'.format(i)] != '':
         app.seed_uris.append(request.form['uri{}'.format(i)][-22:])
-    app.suggest_set = band_BPMs(get_new_recs_and_feats(app.seed_uris,30),80,170)
+    app.suggest_set = band_BPMs(get_new_recs_and_feats(app.seed_uris,100),80,170)
     if app.new_playlist:
       app.training_set = define_training_set(app.seed_uris)
       app.new_playlist = False
@@ -51,10 +51,11 @@ def home_page_post():
   display_suggest_set = app.suggest_set[app.gui_cols + ['P_accept']]
   display_suggest_set.loc[:,'Accept'] = list(map(lambda x: '<a href="/accept/{0}">Accept</a>'.format(x), np.array(display_suggest_set.index)))
   display_suggest_set.loc[:,'Reject'] = list(map(lambda x: '<a href="/reject/{0}">Reject</a>'.format(x), np.array(display_suggest_set.index)))
-  display_suggest_set.loc[:,'Play'] = list(map(lambda x: '<iframe src="https://embed.spotify.com/?uri={0}" width="300" height="80" frameborder="0" allowtransparency="true"></iframe>'.format(x), display_suggest_set.uri))  
+ # display_suggest_set.loc[:,'Play'] = list(map(lambda x: '<iframe src="https://embed.spotify.com/?uri={0}" width="300" height="80" frameborder="0" allowtransparency="true"></iframe>'.format(x), display_suggest_set.uri))  
   display_suggest_set = display_suggest_set.sort_values(by=['P_accept'], ascending=False)
   display_training_set = app.training_set[app.training_set.status == 1][app.gui_cols]
-  return render_template("output.html", seeds=app.seed_uris, training=display_training_set.to_html(escape=False), suggest=display_suggest_set.to_html(escape=False))
+  display_rejection_set = app.training_set[app.training_set.status == -1][app.gui_cols]
+  return render_template("output.html", seeds=app.seed_uris, accept=display_training_set.to_html(escape=False), reject=display_rejection_set.to_html(escape=False), suggest=display_suggest_set.to_html(escape=False))
 
 @app.route("/seed")
 def seed_input():
@@ -74,6 +75,12 @@ def reject_track(suggest_id):
   suggest_id_int = int(suggest_id)
   app.suggest_set, app.training_set = process_track(app.suggest_set, app.training_set, suggest_id_int, -1)
   app.suggest_set = train_NB_model(app.suggest_set, app.training_set)
+  return redirect('/display')
+
+@app.route("/save")
+def save_data():
+  app.training_set.to_pickle(os.path.join(app.PROJ_ROOT,'data','interim','training_set.pkl'))
+  app.suggest_set.to_pickle(os.path.join(app.PROJ_ROOT,'data','interim','track_set.pkl'))
   return redirect('/display')
 
 if __name__ == "__main__":
