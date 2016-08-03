@@ -2,8 +2,11 @@ DJ_suggest
 ==============================
 
 Spotify app using ML to make music suggestions for DJs.
+
 Web app built on flask inside src/web.
 CLI for simple testing in src/ui.
+
+Images for presentation in reports/figures.
 
 NOT PRODUCTION READY.
 
