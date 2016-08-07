@@ -6,6 +6,7 @@ import os
 app = Flask(__name__)
 app.debug = True
 app.gui_cols = ['artist_name','track_name','tempo','uri']
+app.gui_cols_sugg = ['artist_name','track_name','tempo','uri','P_accept']
 app.training_set = pd.DataFrame()
 app.suggest_set = pd.DataFrame()
 app.seed_uris = []
@@ -49,7 +50,8 @@ def home_page_post():
     else:
       if app.training_set.status.min() < 0:
         app.suggest_set = train_NB_model(app.suggest_set, app.training_set)    
-  display_suggest_set = app.suggest_set[app.gui_cols + ['P_accept']]
+ # display_suggest_set = app.suggest_set[app.gui_cols + ['P_accept']]
+  display_suggest_set = app.suggest_set[app.gui_cols_sugg]
   display_suggest_set.loc[:,'Accept'] = list(map(lambda x: '<a href="/accept/{0}">Accept</a>'.format(x), np.array(display_suggest_set.index)))
   display_suggest_set.loc[:,'Reject'] = list(map(lambda x: '<a href="/reject/{0}">Reject</a>'.format(x), np.array(display_suggest_set.index)))
  # display_suggest_set.loc[:,'Play'] = list(map(lambda x: '<iframe src="https://embed.spotify.com/?uri={0}" width="300" height="80" frameborder="0" allowtransparency="true"></iframe>'.format(x), display_suggest_set.uri))  
