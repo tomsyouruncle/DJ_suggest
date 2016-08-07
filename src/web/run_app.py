@@ -4,6 +4,7 @@ import numpy as np
 import sys
 import os
 app = Flask(__name__)
+app.debug = True
 app.gui_cols = ['artist_name','track_name','tempo','uri']
 app.training_set = pd.DataFrame()
 app.suggest_set = pd.DataFrame()

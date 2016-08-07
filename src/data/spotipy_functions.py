@@ -58,7 +58,10 @@ def band_BPMs(track_features_frame, min_BPM, max_BPM):
 
 def process_track(suggest_set, training_set, id, choice):
   suggest_set.loc[id,'status'] = choice
-  training_set.loc[len(training_set)] = suggest_set.loc[id]
+  if len(training_set) > 0:
+    training_set.loc[len(training_set)] = suggest_set.loc[id]
+  else:
+    training_set = suggest_set.loc[id]
   suggest_set = suggest_set.drop([id])
   return (suggest_set, training_set)
 
