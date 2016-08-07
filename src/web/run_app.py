@@ -34,6 +34,11 @@ from models.train_model import *
 
 @app.route("/", methods=['GET'])
 def home_page_get():
+  user_id = request.cookies.get('dj_suggest')
+  if user_id == None:
+    return redirect('/set_cookie')
+  else:
+    print(user_id)
   return render_template("index.html")
 
 @app.route("/display", methods=['GET','POST'])
@@ -51,13 +56,12 @@ def home_page_post():
       if app.training_set.status.min() < 0:
         app.suggest_set = train_NB_model(app.suggest_set, app.training_set)    
  # display_suggest_set = app.suggest_set[app.gui_cols + ['P_accept']]
-  display_training_set = app.training_set[app.training_set.status == 1][app.gui_cols]
   display_suggest_set = app.suggest_set[app.gui_cols_sugg]
   display_suggest_set.loc[:,'Accept'] = list(map(lambda x: '<a href="/accept/{0}">Accept</a>'.format(x), np.array(display_suggest_set.index)))
   display_suggest_set.loc[:,'Reject'] = list(map(lambda x: '<a href="/reject/{0}">Reject</a>'.format(x), np.array(display_suggest_set.index)))
  # display_suggest_set.loc[:,'Play'] = list(map(lambda x: '<iframe src="https://embed.spotify.com/?uri={0}" width="300" height="80" frameborder="0" allowtransparency="true"></iframe>'.format(x), display_suggest_set.uri))  
   display_suggest_set = display_suggest_set.sort_values(by=['P_accept'], ascending=False)
-  
+  display_training_set = app.training_set[app.training_set.status == 1][app.gui_cols]
   display_rejection_set = app.training_set[app.training_set.status == -1][app.gui_cols]
   return render_template("output.html", seeds=app.seed_uris, accept=display_training_set.to_html(escape=False), reject=display_rejection_set.to_html(escape=False), suggest=display_suggest_set.to_html(escape=False))
 
@@ -86,6 +90,13 @@ def save_data():
   app.training_set.to_pickle(os.path.join(app.PROJ_ROOT,'data','interim','training_set.pkl'))
   app.suggest_set.to_pickle(os.path.join(app.PROJ_ROOT,'data','interim','track_set.pkl'))
   return redirect('/display')
+
+@app.route('/set_cookie')
+def cookie_insertion():
+    redirect_to_index = redirect('/')
+    response = app.make_response(redirect_to_index)  
+    response.set_cookie('dj_suggest',value=str(np.random.randint(0,100000000)))
+    return response
 
 if __name__ == "__main__":
   app.run()
