@@ -32,9 +32,10 @@ sys.path.append(src_dir)
 from data.spotipy_functions import *
 from models.train_model import *
 
+print(os.environ['APP_SETTINGS'])
+
 @app.route("/", methods=['GET'])
 def home_page_get():
-  print(os.environ['APP_SETTINGS'])
   user_id = request.cookies.get('dj_suggest')
   if user_id == None:
     return redirect('/set_cookie')
