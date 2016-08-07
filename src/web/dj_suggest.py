@@ -34,6 +34,7 @@ from models.train_model import *
 
 @app.route("/", methods=['GET'])
 def home_page_get():
+  print(os.environ['APP_SETTINGS'])
   user_id = request.cookies.get('dj_suggest')
   if user_id == None:
     return redirect('/set_cookie')
