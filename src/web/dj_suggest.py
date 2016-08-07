@@ -1,10 +1,13 @@
 from flask import Flask, render_template, request, redirect
+from flask.ext.sqlalchemy import SQLAlchemy
 import pandas as pd
 import numpy as np
 import sys
 import os
 app = Flask(__name__)
 app.debug = True
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 app.gui_cols = ['artist_name','track_name','tempo','uri']
 app.gui_cols_sugg = ['artist_name','track_name','tempo','uri','P_accept']
 app.training_set = pd.DataFrame()
@@ -33,6 +36,8 @@ from data.spotipy_functions import *
 from models.train_model import *
 
 print(os.environ['APP_SETTINGS'])
+
+from models import Result
 
 @app.route("/", methods=['GET'])
 def home_page_get():
